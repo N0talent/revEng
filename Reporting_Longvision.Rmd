@@ -1,0 +1,101 @@
+---
+title: "Reporting_LongVision"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#Load Libraries
+require(xts)
+require(quantmod)
+require(knitr)
+
+#Load Files
+source("DataManagement.R")
+source("ConvertingData.R")
+```
+
+## History Performane "LongVision"
+für diese analyse wurde "LongVision" angeschaut. FX Link:
+
+https://www.myfxbook.com/members/autotrade/long-vision/1489427
+
+Datei History Performer wurde folgenderweise bearbeitet:
+
+1. Laden der date
+2. alle Doppelten rausnehmen, dh alle einträge dir den gleich zeitstämple hatten wurden gelöscht
+3. open- und closezeiten in POSIXct gewandelt
+4. entfernen von alle einträge ausser "Buy" und "Sell" in spalte "Action"
+5. ...
+
+```{r Performer,cache=TRUE}
+data.Performer.raw<- ImportPerformer("LongVision.csv")
+data.Performer.clean<-cleanPerformer(data.Performer.raw)
+kable(cbind(data.Performer.raw[1:10,1:5],rep("|",10),data.Performer.clean[1:10,1:5]),align ="c" )
+
+#Summary:
+
+summary(data.Performer.clean)
+
+delta<-data.frame(cbind(nrow(data.Performer.raw), nrow(data.Performer.clean)))
+
+names(delta)<-c("einträge vorher","einträge nacher")
+kable(delta,align ="c" )
+
+#Folgende Symbole werden verwendet:
+
+summary(data.Performer.clean$Symbol)
+rm(delta)
+rm(data.Performer.raw)
+```
+
+## History Data:
+Historydata geht ab 2012 bis 03/09/2016. Aktuelle runtergeladen
+
+TF  | eurusd
+----|----------
+M1  | 
+M5  | 
+M15 | x
+H1  | 
+H4  | 
+D1  | 
+
+
+
+Loading Historical Data:
+```{r Histdata, cache=TRUE}
+data.EURUSD.M15<-ImportHistory("EURUSD","M15")
+
+```
+
+## Historische Daten und Performer Mergen
+### 1. Zeitstemp angleichen
+Zeit stempel wird an Dukascopy angeglichen (GTM).Laut MyFXbook ist LongVision GTM+2.
+Hier werden Random Entries aus der Preformer Data genommen (Nur EURUSD trades) und mit Histroy verglichen.
+
+```{r TimeSync, fig.height=4, fig.width=8}
+#Pick Random Entry
+set.seed(0)
+for(n in 1:20)
+  {
+    TimeSyncVis(data.EURUSD.M15,data.Performer.clean)
+  }
+```
+
+
+**Nach dieser Analyse Sieht es nicht so aus als müssten man das anpassen. Oben beim Sauber machen wurden die Zeiten Convetiert ohne Timezone anzugeben, also wurde da auch nichts geändert. **
+
+
+### 2. Performance Data mit Price muster versehen.
+
+In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster der zur Auswertung später benötigt wird. der Preis musster besteht aus x abgeschlossene Kerzen aus unterschiedliche TFs.
+```{r datamerge}
+
+
+
+```
+
+
+
+
