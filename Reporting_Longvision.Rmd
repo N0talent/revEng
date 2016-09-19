@@ -79,7 +79,7 @@ Hier werden Random Entries aus der Preformer Data genommen (Nur EURUSD trades) u
 set.seed(0)
 for(n in 1:20)
   {
-    TimeSyncVis(data.EURUSD.M15,data.Performer.clean)
+    TimeSyncVis(data.EURUSD.M15,data.Performer.clean,"EURUSD")
   }
 ```
 
@@ -92,7 +92,7 @@ for(n in 1:20)
 set.seed(0)
 for (n in 1:20)
 {      
-      RandomePAHistory(data.EURUSD.M15,data.Performer.clean)
+      RandomePAHistory(data.EURUSD.M15,data.Performer.clean, "EURUSD")
 }
 ```
 

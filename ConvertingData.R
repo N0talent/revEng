@@ -13,10 +13,10 @@ PerformerHistoryMerge<-function()
 }
 
 
-TimeSyncVis<-function(history, performer)
+TimeSyncVis<-function(history, performer,Sym)
 {
   #Generate a Random Entry
-  performer<-performer[performer$Symbol=="EURUSD",]
+  performer<-performer[performer$Symbol==Sym,]
   Randomentry<-floor(runif(1,min=200,max=nrow(performer)))  
   Open<-performer[Randomentry,1]
   OpenPrice<-as.double(performer[Randomentry,"Open.Price"])
@@ -41,12 +41,12 @@ TimeSyncVis<-function(history, performer)
 }
 
 
-RandomePAHistory<- function(history, performer)
+RandomePAHistory<- function(history, performer, Sym)
 {
   require(dplyr)
   
   #filter History and Performer
-  performer<-performer[performer$Symbol=="EURUSD",]
+  performer<-performer[performer$Symbol==Sym,]
   earliestEntry<-min(performer$open)
   subset<-which(earliestEntry<index(history))-1
   history<-history[subset,]
