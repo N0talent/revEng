@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 require(xts)
 require(quantmod)
 require(knitr)
-
+require(dplyr)
 #Load Files
 source("DataManagement.R")
 source("ConvertingData.R")
@@ -89,10 +89,10 @@ for(n in 1:20)
 ### 2. Exploratory Analysis
 
 ```{r RandomCharts, fig.height=4,fig.width=8}
-set.seed(0)
+#set.seed(0)
 for (n in 1:20)
 {      
-      RandomePAHistory(data.EURUSD.M15,data.Performer.clean, "EURUSD")
+      RandomePAHistory(data.EURUSD.M15,data.Performer.clean, "EURUSD",200)
 }
 ```
 

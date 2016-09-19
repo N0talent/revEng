@@ -41,9 +41,9 @@ TimeSyncVis<-function(history, performer,Sym)
 }
 
 
-RandomePAHistory<- function(history, performer, Sym)
+RandomePAHistory<- function(history, performer, Sym,Bars)
 {
-  require(dplyr)
+
   
   #filter History and Performer
   performer<-performer[performer$Symbol==Sym,]
@@ -53,9 +53,8 @@ RandomePAHistory<- function(history, performer, Sym)
   
   
   #Gernerate a Random Chart
-  set.seed(1)
   RandomChartEnd<-floor(runif(1,500, max=nrow(performer)))
-  RandomChartStart<-RandomChartEnd-300
+  RandomChartStart<-RandomChartEnd-Bars
   
   
   #Find all Entries in Chart
@@ -67,7 +66,7 @@ RandomePAHistory<- function(history, performer, Sym)
   
   names(buff)<- c("Open" ,  "High"  , "Low" ,   "Close" , "Volume", "Rowcount")
   
-  View(buff)
+  #View(buff)
 
 
   getBarPosition<- function(x)
@@ -91,23 +90,22 @@ RandomePAHistory<- function(history, performer, Sym)
   
   
   Entries<-mutate(Entries,Col=ifelse(as.character(Action)=="Sell","red","green"))
-  # col<-NULL
-  # for (dir in Entries$Action)
-  # {
-  #       if dir=="Sell"
-  # }
   col<-Entries$Col
-  View(Entries)
+
+  #View(Entries)
 
   #Print Random chart
-  chart_Series(history[RandomChartStart:RandomChartEnd,])
-  segments(x0,y0,x1,y1,lwd=3,col = as.character(col))
-
+  print(chart_Series(history[RandomChartStart:RandomChartEnd,]))
+  if(length(x0)>0)
+      {
+     segments(x0,y0,x1,y1,lwd=3,col = as.character(col))
+  }
+  
   # print(Entries$open)
   # print(x0)
   # print(Entries$close)
   # print(x1)
-  View(cbind(as.character.Date(Entries$open),x0,as.character.Date(Entries$close),x1))
+  #View(cbind(as.character.Date(Entries$open),x0,as.character.Date(Entries$close),x1))
 
 }
 
