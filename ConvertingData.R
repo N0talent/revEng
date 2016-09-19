@@ -43,6 +43,8 @@ TimeSyncVis<-function(history, performer)
 
 RandomePAHistory<- function(history, performer)
 {
+  require(dplyr)
+  
   #filter History and Performer
   performer<-performer[performer$Symbol=="EURUSD",]
   earliestEntry<-min(performer$open)
@@ -58,43 +60,59 @@ RandomePAHistory<- function(history, performer)
   
   #Find all Entries in Chart
   f<-as.numeric(performer$open)>=index(history[RandomChartStart]) & as.numeric(performer$open)<=index(history[RandomChartEnd]) 
-  Entries<-performer[f,]
-  #View(Entries)  
+  Entries<-as.data.frame(performer[f,])
+ 
   RowCount<-1:nrow(history[RandomChartStart:RandomChartEnd,])
   buff<-cbind(history[RandomChartStart:RandomChartEnd,],RowCount)
   
   names(buff)<- c("Open" ,  "High"  , "Low" ,   "Close" , "Volume", "Rowcount")
+  
   View(buff)
+
+
+  getBarPosition<- function(x)
+      {  bar<-NULL
+        for (open in x)  
+        {
+            f<-index(buff)<=open
+            
+            #print(paste(open ," in ", tail(index(buff[f]),1),", in reihe ",tail(buff[f,"Rowcount"],1) ))
+            bar<- c(bar,tail(buff[f,"Rowcount"],1))
+        }
+      bar
+      }
+  
+
+  x0<-getBarPosition(Entries$open)
+  y0<-as.numeric(Entries$Open.Price)
+ 
+  x1<-getBarPosition(Entries$close) 
+  y1<-as.numeric(Entries$Close.Price)
   
   
-  
-  fun<-function(entryData,plotData)
-  {
-    f<-as.numeric(entryData)>=index(plotData) & as.numeric(entryData)<=index(plotData)-1
-    plotData[f,"Rowcount"]
-  }
-  
-  test<-sapply(Entries$open,fun,plotData=buff)
-  View(test)
-  #f<- as.numeric(Entries$open)<=index(buff) & 
-  View(buff[f,])
-  # x0<-c(1,100)
-  # y0<-c(1.354,1.355)
-  # x1<-c(100,200)
-  # y1<-c(1.354,1.355)
-  # segments(x0,y0,x1,y1,lwd=3)
-  
-  
+  Entries<-mutate(Entries,Col=ifelse(as.character(Action)=="Sell","red","green"))
+  # col<-NULL
+  # for (dir in Entries$Action)
+  # {
+  #       if dir=="Sell"
+  # }
+  col<-Entries$Col
+  View(Entries)
+
   #Print Random chart
-  # chart_Series(history[RandomChartStart:RandomChartEnd,])
-  # segments(1,1.354,200,1.355,lwd=3)
-  
-  #print(c(index(history[RandomChartStart]), index(history[RandomChartEnd]),earliestEntry))
+  chart_Series(history[RandomChartStart:RandomChartEnd,])
+  segments(x0,y0,x1,y1,lwd=3,col = as.character(col))
+
+  # print(Entries$open)
+  # print(x0)
+  # print(Entries$close)
+  # print(x1)
+  View(cbind(as.character.Date(Entries$open),x0,as.character.Date(Entries$close),x1))
 
 }
 
 
-RandomePAHistory(data.EURUSD.M15,data.Performer.clean)
+
 
 
 
