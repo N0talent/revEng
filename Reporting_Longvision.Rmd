@@ -15,8 +15,6 @@ source("DataManagement.R")
 source("ConvertingData.R")
 ```
 
-test
-
 ## History Performane "LongVision"
 für diese analyse wurde "LongVision" angeschaut. FX Link:
 
