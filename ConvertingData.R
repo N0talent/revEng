@@ -40,17 +40,77 @@ TimeSyncVis<-function(history, performer)
   
 }
 
-#Test
-#x<-TimeSyncVis(data.EURUSD.M15,data.Performer.clean)
-# 
-# buff<-data.EURUSD.M15[index(data.EURUSD.M15)<= data.Performer.clean[100,1],]
-# 
-# 
-# Entrypoint<-tail(which(index(data.EURUSD.M15)<= data.Performer.clean[500,1]),1)
-# Exitpoint<-tail(which(index(data.EURUSD.M15)<= data.Performer.clean[500,2]),1)
-# 
-# Exitpoint
-# data.EURUSD.M15[Exitpoint]
-# 
-# 
-# data.Performer.clean[100,1]
+
+RandomePAHistory<- function(history, performer)
+{
+  #filter History and Performer
+  performer<-performer[performer$Symbol=="EURUSD",]
+  earliestEntry<-min(performer$open)
+  subset<-which(earliestEntry<index(history))-1
+  history<-history[subset,]
+  
+  
+  #Gernerate a Random Chart
+  set.seed(1)
+  RandomChartEnd<-floor(runif(1,500, max=nrow(performer)))
+  RandomChartStart<-RandomChartEnd-300
+  
+  
+  #Find all Entries in Chart
+  f<-as.numeric(performer$open)>=index(history[RandomChartStart]) & as.numeric(performer$open)<=index(history[RandomChartEnd]) 
+  Entries<-performer[f,]
+  #View(Entries)  
+  RowCount<-1:nrow(history[RandomChartStart:RandomChartEnd,])
+  buff<-cbind(history[RandomChartStart:RandomChartEnd,],RowCount)
+  
+  names(buff)<- c("Open" ,  "High"  , "Low" ,   "Close" , "Volume", "Rowcount")
+  View(buff)
+  
+  
+  
+  fun<-function(entryData,plotData)
+  {
+    f<-as.numeric(entryData)>=index(plotData) & as.numeric(entryData)<=index(plotData)-1
+    plotData[f,"Rowcount"]
+  }
+  
+  test<-sapply(Entries$open,fun,plotData=buff)
+  View(test)
+  #f<- as.numeric(Entries$open)<=index(buff) & 
+  View(buff[f,])
+  # x0<-c(1,100)
+  # y0<-c(1.354,1.355)
+  # x1<-c(100,200)
+  # y1<-c(1.354,1.355)
+  # segments(x0,y0,x1,y1,lwd=3)
+  
+  
+  #Print Random chart
+  # chart_Series(history[RandomChartStart:RandomChartEnd,])
+  # segments(1,1.354,200,1.355,lwd=3)
+  
+  #print(c(index(history[RandomChartStart]), index(history[RandomChartEnd]),earliestEntry))
+
+}
+
+
+RandomePAHistory(data.EURUSD.M15,data.Performer.clean)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
