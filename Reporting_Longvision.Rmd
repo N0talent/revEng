@@ -89,7 +89,7 @@ for(n in 1:20)
 ### 2. Exploratory Analysis
 
 ```{r RandomCharts, fig.height=4,fig.width=8}
-#set.seed(0)
+set.seed(0)
 for (n in 1:20)
 {      
       RandomePAHistory(data.EURUSD.M15,data.Performer.clean, "EURUSD",200)
@@ -100,7 +100,6 @@ for (n in 1:20)
 
 In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster der zur Auswertung später benötigt wird. der Preis musster besteht aus x abgeschlossene Kerzen aus unterschiedliche TFs.
 ```{r datamerge}
-
 
 
 ```

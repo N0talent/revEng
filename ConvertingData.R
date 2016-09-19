@@ -9,7 +9,6 @@ PerformerHistoryMerge<-function()
   # Kopierte Bars Transponieren und in File
   
   
-  
 }
 
 
@@ -34,7 +33,6 @@ TimeSyncVis<-function(history, performer,Sym)
   if(x[7]=="Sell"){colL="red" }else colL="green"
   print(chart_Series(history[Entrypoint:Exitpoint,]))
   segments(100,as.double(x[3]),as.numeric(x[2])-as.numeric(x[1]),as.double(x[4]),col = colL,lwd=3)
-
   
   print(x)
   
@@ -43,19 +41,15 @@ TimeSyncVis<-function(history, performer,Sym)
 
 RandomePAHistory<- function(history, performer, Sym,Bars)
 {
-
-  
   #filter History and Performer
   performer<-performer[performer$Symbol==Sym,]
   earliestEntry<-min(performer$open)
   subset<-which(earliestEntry<index(history))-1
   history<-history[subset,]
-  
-  
+
   #Gernerate a Random Chart
   RandomChartEnd<-floor(runif(1,500, max=nrow(performer)))
   RandomChartStart<-RandomChartEnd-Bars
-  
   
   #Find all Entries in Chart
   f<-as.numeric(performer$open)>=index(history[RandomChartStart]) & as.numeric(performer$open)<=index(history[RandomChartEnd]) 
@@ -65,23 +59,18 @@ RandomePAHistory<- function(history, performer, Sym,Bars)
   buff<-cbind(history[RandomChartStart:RandomChartEnd,],RowCount)
   
   names(buff)<- c("Open" ,  "High"  , "Low" ,   "Close" , "Volume", "Rowcount")
-  
-  #View(buff)
-
 
   getBarPosition<- function(x)
       {  bar<-NULL
         for (open in x)  
         {
             f<-index(buff)<=open
-            
             #print(paste(open ," in ", tail(index(buff[f]),1),", in reihe ",tail(buff[f,"Rowcount"],1) ))
             bar<- c(bar,tail(buff[f,"Rowcount"],1))
         }
       bar
       }
   
-
   x0<-getBarPosition(Entries$open)
   y0<-as.numeric(Entries$Open.Price)
  
@@ -92,20 +81,12 @@ RandomePAHistory<- function(history, performer, Sym,Bars)
   Entries<-mutate(Entries,Col=ifelse(as.character(Action)=="Sell","red","green"))
   col<-Entries$Col
 
-  #View(Entries)
-
   #Print Random chart
   print(chart_Series(history[RandomChartStart:RandomChartEnd,]))
   if(length(x0)>0)
       {
-     segments(x0,y0,x1,y1,lwd=3,col = as.character(col))
-  }
-  
-  # print(Entries$open)
-  # print(x0)
-  # print(Entries$close)
-  # print(x1)
-  #View(cbind(as.character.Date(Entries$open),x0,as.character.Date(Entries$close),x1))
+      segments(x0,y0,x1,y1,lwd=3,col = as.character(col))
+      }
 
 }
 
