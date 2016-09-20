@@ -13,6 +13,7 @@ require(dplyr)
 #Load Files
 source("DataManagement.R")
 source("ConvertingData.R")
+source("VisualizeData.R")
 ```
 
 ## History Performane "LongVision"
@@ -23,30 +24,42 @@ https://www.myfxbook.com/members/autotrade/long-vision/1489427
 Datei History Performer wurde folgenderweise bearbeitet:
 
 1. Laden der date
-2. alle Doppelten rausnehmen, dh alle einträge dir den gleich zeitstämple hatten wurden gelöscht
+2. alle Doppelten rausnehmen, dh alle einträge die den gleich Open.Date-Zeitstämple haben wurden gelöscht
 3. open- und closezeiten in POSIXct gewandelt
 4. entfernen von alle einträge ausser "Buy" und "Sell" in spalte "Action"
-5. ...
+5. Entfernen von Unique Symbole
 
-```{r Performer,cache=TRUE}
+
+```{r PerformerClean1,cache=TRUE,echo=FALSE}
 data.Performer.raw<- ImportPerformer("LongVision.csv")
 data.Performer.clean<-cleanPerformer(data.Performer.raw)
 kable(cbind(data.Performer.raw[1:10,1:5],rep("|",10),data.Performer.clean[1:10,1:5]),align ="c" )
+```
 
-#Summary:
-
+Summary:
+```{r PerformerClean2,cache=TRUE,echo=FALSE}
 summary(data.Performer.clean)
 
 delta<-data.frame(cbind(nrow(data.Performer.raw), nrow(data.Performer.clean)))
 
 names(delta)<-c("einträge vorher","einträge nacher")
 kable(delta,align ="c" )
+```
 
-#Folgende Symbole werden verwendet:
 
+Folgende Symbole werden verwendet:
+```{r PerformerClean3,cache=TRUE,echo=FALSE}
 summary(data.Performer.clean$Symbol)
 rm(delta)
 rm(data.Performer.raw)
+```
+
+Enfernen von Unique Symbole.Neue Data hat nur folgende Symbolverteilung:
+
+```{r PerformerClean4,cache=TRUE,echo=FALSE}
+Sym<-c("AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPCHF","GBPUSD", "USDCAD", "USDCHF", "USDJPY")
+data.Performer.clean<- removeSymbols(Sym,data.Performer.clean)
+summary(data.Performer.clean$Symbol)
 ```
 
 ## History Data:
@@ -84,7 +97,7 @@ for(n in 1:20)
 ```
 
 
-**Nach dieser Analyse Sieht es nicht so aus als müssten man das anpassen. Oben beim Sauber machen wurden die Zeiten Convetiert ohne Timezone anzugeben, also wurde da auch nichts geändert. **
+**Nach dieser Analyse Sieht es nicht so aus als müssten man das anpassen. Oben beim Cleaning wurden die Zeiten Convetiert ohne Timezone anzugeben, also wurde da auch nichts geändert. **
 
 ### 2. Exploratory Analysis
 

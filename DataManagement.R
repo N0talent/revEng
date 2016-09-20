@@ -37,25 +37,17 @@ cleanPerformer<-function(data)
   #remove all actions except Buy and Sell
   data<-data[(data$Action=="Buy" | data$Action=="Sell"),  ]
 
-  
+  data$Symbol<-factor(data$Symbol)
   
   data  
 }
 
-PerformerHistoryMerge<-function()
+removeSymbols<-function(Sym,perfomer)
 {
-  # Open Datum mit in Histroy finden in TF X
-  
-  
-  # X bars zurückschauen und dann Kopieren
-  
-  
-  # Kopierte Bars Transponieren und in File
-  
-  
-  
+  perfomer<-perfomer[perfomer$Symbol %in% Sym,]
+  perfomer$Symbol<-factor(perfomer$Symbol)
+  perfomer
 }
-
 
 
 
