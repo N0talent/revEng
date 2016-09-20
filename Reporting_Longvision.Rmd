@@ -54,7 +54,8 @@ rm(delta)
 rm(data.Performer.raw)
 ```
 
-Enfernen von Unique Symbole.Neue Data hat nur folgende Symbolverteilung:
+Enfernen von Unique Symbole.
+Neue Data hat nur folgende Symbolverteilung:
 
 ```{r PerformerClean4,cache=TRUE,echo=FALSE}
 Sym<-c("AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPCHF","GBPUSD", "USDCAD", "USDCHF", "USDJPY")
@@ -109,10 +110,17 @@ for (n in 1:20)
 }
 ```
 
+
+Aktuell kein muster erkennbar bis auf eine Flag-Strategie. In Strategie beschreibung vom Performer ist es eine Summe vo Strategien die auf dem Konto Laufen.
+
+
 ### 3. Performance Data mit Price muster versehen.
 
 In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster der zur Auswertung später benötigt wird. der Preis musster besteht aus x abgeschlossene Kerzen aus unterschiedliche TFs.
 ```{r datamerge}
+
+#EURUSD
+
 
 
 ```
