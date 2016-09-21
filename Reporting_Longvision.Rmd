@@ -79,6 +79,7 @@ D1  |
 
 Loading Historical Data:
 ```{r Histdata, cache=TRUE}
+
 data.EURUSD.M15<-ImportHistory("EURUSD","M15")
 
 ```
@@ -117,12 +118,46 @@ Aktuell kein muster erkennbar bis auf eine Flag-Strategie. In Strategie beschrei
 ### 3. Performance Data mit Price muster versehen.
 
 In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster der zur Auswertung später benötigt wird. der Preis musster besteht aus x abgeschlossene Kerzen aus unterschiedliche TFs.
-```{r datamerge}
+
+```{r datamerge, cache=TRUE}
+#Folgende Instrumente werden benötigt:
+summary(data.Performer.clean$Symbol)
+
+Bars.Lookback<-5
 
 #EURUSD
+data.Performer.Symbol<- subset(data.Performer.clean,Symbol=="EURUSD")
+
+
+##All Timeframes
+# TF<-"M5"
+# 
+# data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
+
+#----
+TF<-"M15"
+data.History<-data.EURUSD.M15
+data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
+
+# #----
+# TF<-"H1"
+# 
+# data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
+# 
+# #----
+# TF<-"H4"
+# 
+# data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
+# 
+# #----
+# TF<-"D1"
+# 
+# data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
 
 
 
+rm(data.Performer.clean)
+rm(data.Performer.Symbol)
 ```
 
 
