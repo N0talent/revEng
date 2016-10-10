@@ -51,6 +51,42 @@ removeSymbols<-function(Sym,perfomer)
 }
 
 
+checkSync<-function(performer,history)
+{
+  require(xts)
+  f<-index(history)<=performer[,1]
+  bars<-tail(history[f],1)
+
+  c(index(bars),bars[,2],bars[,3],performer)
+
+  returnVek=NULL
+  cVek=NULL
+  for (n in 1:nrow(performer))
+  {
+    f<-index(history)<=performer[n,1]
+    bars<-tail(history[f],1)
+
+    if(performer[n,"Open.Price"]<=bars[,2] & performer[n,"Open.Price"]>=bars[,3])result=1 else result=0
+    if(result==0)
+    {
+      if(performer[n,"Open.Price"]<=bars[,2]) dev<- -(performer[n,"Open.Price"]-bars[,2])
+      if(performer[n,"Open.Price"]>=bars[,3])dev<- -(bars[,3]-performer[n,"Open.Price"])
+    }
+    else
+    {
+      dev<-NA
+    }
+    cVek<-c(as.character(performer[n,1]),as.character(index(bars)),performer[n,"Open.Price"],bars[,2],bars[,3],as.numeric(result),dev)
+
+    returnVek<-rbind(returnVek,cVek)
+  }
+  
+  returnVek
+}
+
+#d<-checkSync(data.Performer.clean.EURUSD[100:nrow(data.Performer.clean.EURUSD),],data.EURUSD.M15)
+
+
 
 
 
