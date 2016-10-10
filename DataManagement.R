@@ -77,14 +77,26 @@ checkSync<-function(performer,history)
       dev<-NA
     }
     cVek<-c(as.character(performer[n,1]),as.character(index(bars)),performer[n,"Open.Price"],bars[,2],bars[,3],as.numeric(result),dev)
-
+    #cVek<-c(as.numeric(result),dev)
     returnVek<-rbind(returnVek,cVek)
   }
   
-  returnVek
+  pro<-mean(as.numeric(returnVek[,6]))
+  pro<-round(pro,2)
+  print(paste("Sync:", pro ,sep=" "))
+  
+  dev<-as.numeric(returnVek[,7])
+  dev<-dev[!is.na(dev)]
+  print(paste("Sum of unSynced:",length(dev),sep=" " ))
+  if(length(dev)>0)
+  {
+    hist(dev,at= seq(0,0.01,by=0.0001) )
+  }
+  
 }
 
-#d<-checkSync(data.Performer.clean.EURUSD[100:nrow(data.Performer.clean.EURUSD),],data.EURUSD.M15)
+#d<-checkSync(data.Performer.clean.EURUSD,data.EURUSD.M15)
+
 
 
 
