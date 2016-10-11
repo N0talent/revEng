@@ -131,7 +131,7 @@ Aktuell kein muster erkennbar bis auf eine Flag-Strategie. In Strategie beschrei
 
 In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster der zur Auswertung später benötigt wird. der Preis musster besteht aus x abgeschlossene Kerzen aus unterschiedliche TFs.
 
-```{r datamerge, cache=TRUE}
+```{r datamerge}
 #Folgende Instrumente werden benötigt:
 summary(data.Performer.clean$Symbol)
 
@@ -144,12 +144,12 @@ data.Performer.Symbol<- subset(data.Performer.clean,Symbol=="EURUSD")
 ##All Timeframes
 TF<-"M5"
 data.History<-data.EURUSD.M5
-data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
+data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF,timestamp=TRUE,netto =  FALSE,Normalized =  FALSE,rm.open =  FALSE)
 
 #----
 TF<-"M15"
 data.History<-data.EURUSD.M15
-data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern, data.History,Bars.Lookback,TF)
+data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern, data.History,Bars.Lookback,TF,timestamp=TRUE,netto =  FALSE,Normalized =  FALSE,rm.open =  FALSE)
 
 # #----
 # TF<-"H1"
