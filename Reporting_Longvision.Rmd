@@ -177,7 +177,7 @@ In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster 
 
 Schreibt File LongVision_AboslutPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
 
-```{r datamerge}
+```{r datamerge, cache=TRUE}
 #Folgende Instrumente werden benötigt:
 summary(data.Performer.clean$Symbol)
 
@@ -217,7 +217,7 @@ head(data.Performer.pattern,20)
 
 Schreibt File LongVision_ScaledPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
 
-```{r scaledPrices}
+```{r scaledPrices, cache=TRUE}
 #Bars per TF for Pattern:
 Bars.Lookback<-5
 SaveFileDirectory<-"./Files/LongVision/"
