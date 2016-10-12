@@ -33,7 +33,6 @@ Datei History Performer wurde folgenderweise bearbeitet:
 ```{r PerformerClean1,cache=TRUE,echo=FALSE}
 data.Performer.raw<- ImportPerformer("LongVision.csv")
 data.Performer.clean<-cleanPerformer(data.Performer.raw)
-data.Performer.clean.EURUSD<- data.Performer.clean[data.Performer.clean$Symbol=="EURUSD",]
 kable(cbind(data.Performer.raw[1:10,1:5],rep("|",10),data.Performer.clean[1:10,1:5]),align ="c" )
 ```
 
@@ -67,22 +66,57 @@ summary(data.Performer.clean$Symbol)
 ## History Data:
 Historydata geht ab 2012 bis 03/09/2016. Aktuelle runtergeladen
 
-TF  |eurusd
-----|----------
-M1  |
-M5  |x 
-M15 |x
-H1  | 
-H4  | 
-D1  | 
+TF  |eurusd |gbpusd |usdjpy |audusd
+----|----------------------------------
+M1  |       |       |       |
+M5  |x      |x      |x      |x
+M15 |x      |x      |x      |x
+H1  |x      |x      |x      |x
+H4  |x      |x      |x      |x
+D1  |x      |x      |x      |x
 
 
 
-Loading Historical Data:
+Loading Historical Data as List. First List all TimeFrames of particular Symbol, then list all TimeFrames by Symbol:
 ```{r Histdata, cache=TRUE}
-data.EURUSD.M5<-ImportHistory("EURUSD","M5")
-data.EURUSD.M15<-ImportHistory("EURUSD","M15")
+sym<-"EURUSD"
+data.M5<-ImportHistory(sym,"M5")
+data.M15<-ImportHistory(sym,"M15")
+data.H1<-ImportHistory(sym,"H1")
+data.H4<-ImportHistory(sym,"H4")
+data.D1<-ImportHistory(sym,"D1")
 
+EURUSD<-list(M5=data.M5,M15=data.M15,H1=data.H1,H4=data.H4, D1=data.D1)
+
+sym<-"GBPUSD"
+data.M5<-ImportHistory(sym,"M5")
+data.M15<-ImportHistory(sym,"M15")
+data.H1<-ImportHistory(sym,"H1")
+data.H4<-ImportHistory(sym,"H4")
+data.D1<-ImportHistory(sym,"D1")
+
+GBPUSD<-list(M5=data.M5,M15=data.M15,H1=data.H1,H4=data.H4, D1=data.D1)
+
+sym<-"USDJPY"
+data.M5<-ImportHistory(sym,"M5")
+data.M15<-ImportHistory(sym,"M15")
+data.H1<-ImportHistory(sym,"H1")
+data.H4<-ImportHistory(sym,"H4")
+data.D1<-ImportHistory(sym,"D1")
+
+USDJPY<-list(M5=data.M5,M15=data.M15,H1=data.H1,H4=data.H4, D1=data.D1)
+
+sym<-"AUDUSD"
+data.M5<-ImportHistory(sym,"M5")
+data.M15<-ImportHistory(sym,"M15")
+data.H1<-ImportHistory(sym,"H1")
+data.H4<-ImportHistory(sym,"H4")
+data.D1<-ImportHistory(sym,"D1")
+
+AUDUSD<-list(M5=data.M5,M15=data.M15,H1=data.H1,H4=data.H4, D1=data.D1)
+
+
+data.History<-list(EURUSD=EURUSD,GBPUSD=GBPUSD,USDJPY=USDJPY,AUDUSD=AUDUSD)
 
 ```
 
@@ -91,23 +125,32 @@ data.EURUSD.M15<-ImportHistory("EURUSD","M15")
 Zeit stempel wird an Dukascopy angeglichen (GTM).Laut MyFXbook ist LongVision GTM+2.
 Hier werden Random Entries aus der Preformer Data genommen (Nur EURUSD trades) und mit Histroy verglichen.
 
-```{r TimeSync, fig.height=4, fig.width=8}
+```{r TimeSync, fig.height=4, fig.width=8, cache=TRUE}
 #Pick Random Entry
+
+##Test Parameter:
+Symbol<-"EURUSD"
+
+data.Test<- data.History[[Symbol]]
+data.Performer.clean.Test<- data.Performer.clean[data.Performer.clean$Symbol==Symbol,]
+
+TF<-"M15"
 set.seed(0)
-for(n in 1:20)
+for(n in 1:5)
   {
-    TimeSyncVis(data.EURUSD.M15,data.Performer.clean,"EURUSD")
+    TimeSyncVis(data.Test[[TF]],data.Performer.clean,Symbol)
   }
 ```
 
 Püfen wieviele Entries zwischen High und Low Liegen in abhängigkeit von TimeFrame:
 
 ```{r checksync,cache=TRUE, warning=FALSE}
+
 #EURUSD
 ##M5
-checkSync(data.Performer.clean.EURUSD,data.EURUSD.M5)
+checkSync(data.Performer.clean.Test,data.Test[["M5"]])
 ##M15
-checkSync(data.Performer.clean.EURUSD,data.EURUSD.M15)
+checkSync(data.Performer.clean.Test,data.Test[["M15"]])
 
 ```
 
@@ -115,11 +158,12 @@ checkSync(data.Performer.clean.EURUSD,data.EURUSD.M15)
 
 ### 2. Exploratory Analysis
 
-```{r RandomCharts, fig.height=4,fig.width=8}
+```{r RandomCharts, fig.height=4,fig.width=8, cache=TRUE}
 set.seed(0)
-for (n in 1:20)
+TF<-"M15"
+for (n in 1:5)
 {      
-      RandomePAHistory(data.EURUSD.M15,data.Performer.clean, "EURUSD",200)
+      RandomePAHistory(data.Test[[TF]],data.Performer.clean, Symbol,200)
 }
 ```
 
@@ -131,47 +175,76 @@ Aktuell kein muster erkennbar bis auf eine Flag-Strategie. In Strategie beschrei
 
 In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster der zur Auswertung später benötigt wird. der Preis musster besteht aus x abgeschlossene Kerzen aus unterschiedliche TFs.
 
+Schreibt File LongVision_AboslutPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
+
 ```{r datamerge}
 #Folgende Instrumente werden benötigt:
 summary(data.Performer.clean$Symbol)
 
+#Bars per TF for Pattern:
 Bars.Lookback<-5
+SaveFileDirectory<-"./Files/LongVision/"
+SaveFileName<-"LongVision_AbsolutPrices.csv"
+FilePath<-paste(SaveFileDirectory,SaveFileName,sep="")
 
-#EURUSD
-data.Performer.Symbol<- subset(data.Performer.clean,Symbol=="EURUSD")
+#Parameter:
+Symbol<-c("EURUSD","GBPUSD","USDJPY","AUDUSD")
+Timeframe<-c("M5","M15", "H1","H4","D1")
 
-
-##All Timeframes
-TF<-"M5"
-data.History<-data.EURUSD.M5
-data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF,timestamp=TRUE,netto =  FALSE,Normalized =  FALSE,rm.open =  FALSE)
-
-#----
-TF<-"M15"
-data.History<-data.EURUSD.M15
-data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern, data.History,Bars.Lookback,TF,timestamp=TRUE,netto =  FALSE,Normalized =  FALSE,rm.open =  FALSE)
-
-# #----
-# TF<-"H1"
-# 
-# data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
-# 
-# #----
-# TF<-"H4"
-# 
-# data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
-# 
-# #----
-# TF<-"D1"
-# 
-# data.Performer.pattern<-Pattern.KnitWithData(data.Performer.Symbol, data.History,Bars.Lookback,TF)
+#get Pattern
+data.Performer.pattern.AbsolutPrices<-NULL
+data.Performer.pattern<-NULL
+for (Sym in Symbol)  
+{
+  data.Performer.pattern<- subset(data.Performer.clean,Symbol==Sym)
+  for(t in Timeframe)
+  {
+    data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern,
+                                                 data.History[[Sym]][[t]],
+                                                 Bars.Lookback,t,
+                                                 timestamp=TRUE,
+                                                 netto =  FALSE,
+                                                 Normalized =  FALSE,
+                                                 rm.open =  FALSE)
+  }
+  data.Performer.pattern.AbsolutPrices<-rbind(data.Performer.pattern.AbsolutPrices,data.Performer.pattern)
+}
+  
+write.csv(data.Performer.pattern.AbsolutPrices,file=FilePath)
 
 head(data.Performer.pattern,20)
-
-rm(data.Performer.clean)
-rm(data.Performer.Symbol)
 ```
 
+Schreibt File LongVision_ScaledPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
 
+```{r scaledPrices}
+#Bars per TF for Pattern:
+Bars.Lookback<-5
+SaveFileDirectory<-"./Files/LongVision/"
+SaveFileName<-"LongVision_ScaledPrices.csv"
+FilePath<-paste(SaveFileDirectory,SaveFileName,sep="")
 
+#get Pattern
+data.Performer.pattern.ScaledPrice<-NULL
+data.Performer.pattern<-NULL
+for (Sym in Symbol)  
+{
+  data.Performer.pattern<- subset(data.Performer.clean,Symbol==Sym)
+  for(t in Timeframe)
+  {
+    data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern,
+                                                 data.History[[Sym]][[t]],
+                                                 Bars.Lookback,t,
+                                                 timestamp=FALSE,
+                                                 netto =  TRUE,
+                                                 Normalized =  TRUE,
+                                                 rm.open =  TRUE)
+  }
+  data.Performer.pattern.ScaledPrice<-rbind(data.Performer.pattern.ScaledPrice,data.Performer.pattern)
+}
+  
+write.csv(data.Performer.pattern.ScaledPrice,file=FilePath)
+
+head(data.Performer.pattern,20)
+```
 

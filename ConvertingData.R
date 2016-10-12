@@ -22,7 +22,6 @@ Pattern.FindPattern<-function(performer,history, xBars,TF,timestamp=TRUE,netto=F
     {
       NullPoint<-c(0,rep(bars[1,1],4)) 
     }
-
   }
   else
   {
