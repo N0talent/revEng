@@ -8,7 +8,6 @@ Pattern.FindPattern<-function(performer,history, xBars,TF,timestamp=TRUE,netto=F
   bars<-bars[,1:4]
   
   
-    
   NullPoint<-0
   ATR<-1
   
@@ -82,14 +81,72 @@ Pattern.KnitWithData<-function(performer, history,xBars,TF,timestamp=TRUE,netto=
   
 }
 
+Pattern.Entries<-function(pattern,Timeframe, xBars)
+{
+ 
+  id<-""
+  if(xBars>=2)
+  {
+    for (x in 1:(xBars-1))
+    {
+      id<-c(id,x) 
+    }
+  }
+  print(11)
+  col<-NULL
+  for (n in id)
+  {
+    for(m in Timeframe)
+    {
+      if(n==""){lables<-c("Open" ,  "High"  , "Low" ,   "Close")} else {lables<-c("High" , "Low" , "Close")}
+      d<-paste(m,lables,sep=".")
+      d<-paste(d,n,sep="")
+      col<-c(col,d)    
+    }
+  }  
+  
+  
+  f<-pattern$Action=="Sell" 
+  print(col)
+  
+  for (n in col)
+  {
+    print(n)
+    print(length(f))
+    print(length(n))
+    pattern[f,n]<- pattern[f,n]*(-1)
+    }
+  
+  pattern
+}
+
+
+
+
+
 
 
 # # d<-Pattern.FindPattern(per$open,data.EURUSD.M15,5,"M15",2)
 # # 
 # # 
-# per<-data.Performer.clean[100,]
+# g<-c("Symbol","Action")
+# per<-data.Performer.clean[1:5,]
+# View(per)
 # # #
 # result<-Pattern.KnitWithData(per, data.EURUSD.M15,5,"M15",timestamp=TRUE,netto =  FALSE,Normalized =  FALSE,rm.open =  FALSE)
+# v<-c("M15.Open","M15.High","M15.Close")
+# #select(result,Action=="Sell")
+# 
+# #result <-result[,Action=="Sell"]
+# f<-result$Action=="Sell"
+# #b<-function(x){result[f,v]<-1}
+# 
+# 
+#View(result)
+
+
+# #transform(result,result[,v]=-1)#result[result$Action=="Sell",v]*-1
+# 
 # View(result)
 # # 
 # # 

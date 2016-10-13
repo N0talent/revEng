@@ -212,7 +212,7 @@ for (Sym in Symbol)
   
 write.csv(data.Performer.pattern.AbsolutPrices,file=FilePath)
 
-head(data.Performer.pattern,20)
+head(data.Performer.pattern,5)
 ```
 
 Schreibt File LongVision_ScaledPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
@@ -230,6 +230,7 @@ data.Performer.pattern<-NULL
 for (Sym in Symbol)  
 {
   data.Performer.pattern<- subset(data.Performer.clean,Symbol==Sym)
+  #data.Performer.pattern<-data.Performer.pattern[1:100,]
   for(t in Timeframe)
   {
     data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern,
@@ -245,6 +246,36 @@ for (Sym in Symbol)
   
 write.csv(data.Performer.pattern.ScaledPrice,file=FilePath)
 
-head(data.Performer.pattern,20)
+head(data.Performer.pattern,5)
 ```
+
+
+## 4. Create Test Data  
+
+
+
+```{r EntrieData}
+SaveFileDirectory<-"./Files/LongVision/"
+SaveFileName<-"LongVision_PatternEntries.csv"
+FilePath<-paste(SaveFileDirectory,SaveFileName,sep="")
+
+data.Pattern.Entries<-Pattern.Entries(data.Performer.pattern.ScaledPrice,Timeframe, xBars)
+
+f<-c("open","Action")
+start<-ncol(data.Performer.clean)+1
+end<-ncol(data.Pattern.Entries)
+Hour<-format(data.Pattern.Entries[,"open"],"%H")
+Min<-format(data.Pattern.Entries[,"open"],"%M")
+data.Pattern.Entries<-cbind(data.Pattern.Entries[,f],Hour,Min, data.Pattern.Entries[,start:end])
+
+write.csv(data.Pattern.Entries,file=FilePath)
+head(data.Pattern.Entries,5)
+
+```
+
+
+
+
+
+
 
