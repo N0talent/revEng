@@ -1,4 +1,4 @@
-Pattern.FindPattern<-function(performer,history, xBars,TF,timestamp=TRUE,netto=FALSE,Normalized=FALSE,rm.open=FALSE)
+Pattern.FindPattern<-function(performer,Action,history, xBars,TF,timestamp=TRUE,netto=FALSE,Normalized=FALSE,rm.open=FALSE)
 {
   require(xts)
   #Find X bars at a Specific Date BEFORE entrie
@@ -7,7 +7,7 @@ Pattern.FindPattern<-function(performer,history, xBars,TF,timestamp=TRUE,netto=F
   bars<-bars[1:xBars]
   bars<-bars[,1:4]
   
-  
+  print(factor(Action))
   NullPoint<-0
   ATR<-1
   
@@ -19,7 +19,7 @@ Pattern.FindPattern<-function(performer,history, xBars,TF,timestamp=TRUE,netto=F
     bars<-data.frame(date=index(bars), coredata(bars))
     if (netto==TRUE)
     {
-      NullPoint<-c(0,rep(bars[1,1],4)) 
+      NullPoint<-c(0,rep(bars[1,2],4)) 
     }
   }
   else
@@ -37,14 +37,18 @@ Pattern.FindPattern<-function(performer,history, xBars,TF,timestamp=TRUE,netto=F
   closeCol<-ncol(bars)
   ohlc<-openCol:closeCol
   barnames<-names(bars)
+  
+  
   names(bars)<-paste(TF,barnames,sep=".")
   
   if(rm.open==TRUE)
   {
-    name<-paste(TF,"Open",sep=".")
-    bars.transpo<- bars[1,1]
-    names(bars.transpo)<-name
+    # name<-paste(TF,"Open",sep=".")
+    # bars.transpo<- bars[1,1]
+    # names(bars.transpo)<-name
     ohlc<-2:4
+    if(Normalized==TRUE & Action=="Sell")ohlc<-c(3,2,4)
+    
   }
   if(timestamp==TRUE)
   {
@@ -57,7 +61,16 @@ Pattern.FindPattern<-function(performer,history, xBars,TF,timestamp=TRUE,netto=F
   {
     for (n in 1:nrow(bars))
     {
-      bars.transpo<-c(bars.transpo,(bars[n,ohlc]-NullPoint)/ATR)
+      if(Normalized==TRUE & Action=="Sell")
+      {
+        buff<-(NullPoint-bars[n,ohlc])/ATR
+        bars.transpo<-c(bars.transpo,buff)
+      }
+      else
+      {
+        buff<-(bars[n,ohlc]-NullPoint)/ATR
+        bars.transpo<-c(bars.transpo,buff)
+      }
     }
   }
   
@@ -72,10 +85,17 @@ Pattern.KnitWithData<-function(performer, history,xBars,TF,timestamp=TRUE,netto=
   #knit Found Pattern with Performer Data
   require(dplyr)
   Pattern=NULL
-  for (open in performer$open)
+  # for (open in performer$open)
+  # {
+  #   Pattern<-rbind(Pattern, Pattern.FindPattern(open, history,xBars,TF,timestamp,netto,Normalized,rm.open))
+  # }
+  
+  for (n in 1:nrow(performer))
   {
-    Pattern<-rbind(Pattern, Pattern.FindPattern(open, history,xBars,TF,timestamp,netto,Normalized,rm.open))
+    Pattern<-rbind(Pattern, Pattern.FindPattern(performer$open[n],as.character(performer$Action[n]), history,xBars,TF,timestamp,netto,Normalized,rm.open))
   }
+  
+  
   #pass new Performer Data
   performer<-cbind(performer,Pattern)
   
@@ -92,30 +112,27 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
       id<-c(id,x) 
     }
   }
-  print(11)
+  
   col<-NULL
   for (n in id)
   {
     for(m in Timeframe)
     {
-      if(n==""){lables<-c("Open" ,  "High"  , "Low" ,   "Close")} else {lables<-c("High" , "Low" , "Close")}
+      #if(n==""){lables<-c("Open" ,  "High"  , "Low" ,   "Close")} else {lables<-c("High" , "Low" , "Close")}
+      lables<-c("High" , "Low" , "Close")
       d<-paste(m,lables,sep=".")
-      d<-paste(d,n,sep="")
+      if(n!="")d<-paste(d,n,sep=".")
       col<-c(col,d)    
     }
   }  
   
   
   f<-pattern$Action=="Sell" 
-  print(col)
   
   for (n in col)
   {
-    print(n)
-    print(length(f))
-    print(length(n))
     pattern[f,n]<- pattern[f,n]*(-1)
-    }
+  }
   
   pattern
 }
@@ -130,11 +147,13 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
 # # 
 # # 
 # g<-c("Symbol","Action")
-# per<-data.Performer.clean[1:5,]
-# View(per)
-# # #
-# result<-Pattern.KnitWithData(per, data.EURUSD.M15,5,"M15",timestamp=TRUE,netto =  FALSE,Normalized =  FALSE,rm.open =  FALSE)
-# v<-c("M15.Open","M15.High","M15.Close")
+per<-data.Performer.clean[1:5,]
+View(per)
+# #
+result<-Pattern.KnitWithData(per, data.EURUSD.M15,5,"M15",timestamp=FALSE,netto =  TRUE,Normalized =  TRUE,rm.open =  TRUE)
+View(result)
+
+
 # #select(result,Action=="Sell")
 # 
 # #result <-result[,Action=="Sell"]
@@ -151,9 +170,9 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
 # # 
 # # 
 # # g<-mutate(data.Performer.clean[100:110,],openm15=Pattern.FindPattern(open,data.EURUSD.M15,5,"M15",2))
-
-
-
-
-
-
+# 
+# d<-data.EURUSD.M15[1000]
+# v<-coredata(d)
+# v-v[1]
+# c<-1/v
+# c-c[1]

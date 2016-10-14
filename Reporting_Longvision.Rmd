@@ -177,7 +177,7 @@ In diesem abschnitt wird die daten "data.Performer.Clean" mit eine Preis muster 
 
 Schreibt File LongVision_AboslutPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
 
-```{r datamerge, cache=TRUE}
+```{r datamerge}
 #Folgende Instrumente werden benötigt:
 summary(data.Performer.clean$Symbol)
 
@@ -197,6 +197,7 @@ data.Performer.pattern<-NULL
 for (Sym in Symbol)  
 {
   data.Performer.pattern<- subset(data.Performer.clean,Symbol==Sym)
+
   for(t in Timeframe)
   {
     data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern,
@@ -217,7 +218,7 @@ head(data.Performer.pattern,5)
 
 Schreibt File LongVision_ScaledPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
 
-```{r scaledPrices, cache=TRUE}
+```{r scaledPrices}
 #Bars per TF for Pattern:
 Bars.Lookback<-5
 SaveFileDirectory<-"./Files/LongVision/"
@@ -230,7 +231,7 @@ data.Performer.pattern<-NULL
 for (Sym in Symbol)  
 {
   data.Performer.pattern<- subset(data.Performer.clean,Symbol==Sym)
-  #data.Performer.pattern<-data.Performer.pattern[1:100,]
+  data.Performer.pattern<- data.Performer.pattern[1:10,]
   for(t in Timeframe)
   {
     data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern,
@@ -259,7 +260,8 @@ SaveFileDirectory<-"./Files/LongVision/"
 SaveFileName<-"LongVision_PatternEntries.csv"
 FilePath<-paste(SaveFileDirectory,SaveFileName,sep="")
 
-data.Pattern.Entries<-Pattern.Entries(data.Performer.pattern.ScaledPrice,Timeframe, xBars)
+
+data.Pattern.Entries<-Pattern.Entries(data.Performer.pattern.ScaledPrice,Timeframe, Bars.Lookback)
 
 f<-c("open","Action")
 start<-ncol(data.Performer.clean)+1
