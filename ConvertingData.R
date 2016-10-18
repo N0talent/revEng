@@ -87,17 +87,39 @@ Pattern.KnitWithData<-function(performer, history,xBars,TF,timestamp=TRUE,netto=
   #knit Found Pattern with Performer Data
   require(dplyr)
   Pattern=NULL
-  # for (open in performer$open)
-  # {
-  #   Pattern<-rbind(Pattern, Pattern.FindPattern(open, history,xBars,TF,timestamp,netto,Normalized,rm.open))
-  # }
-  
-  for (n in 1:nrow(performer))
+
+  #Function um Absolutprices zu finden
+  Findpattern.Absolut<-function(open)
   {
-    Pattern<-rbind(Pattern, Pattern.FindPattern(performer$open[n],as.character(performer$Action[n]), history,xBars,TF,timestamp,netto,Normalized,rm.open))
+    View(history)
+    #FindBars to Timestamp
+    f<-index(history)<=open
+    bars<-tail(history[f],xBars+1)
+    bars<-bars[1:xBars]
+    bars<-bars[,1:4]    
+    
+    #Transpo Bars 
+    bars.transpo=NULL
+    barnames<-names(bars)
+    names(bars)<-paste(TF,barnames,sep=".")
+    
+    
+    for (n in 1:nrow(bars))
+    {
+      bars.transpo<-cbind(bars.transpo,(bars[n,]))
+
+    }
+    #print(bars.transpo)
+    data.frame(bars.transpo)
   }
+  n<-1
+  # for (n in 1:nrow(performer))
+  # {
+ print(performer$open[n])
+     Pattern<-rbind(Pattern,Findpattern.Absolut(performer$open[n]))
+  #}
   
-  
+  print(Pattern)
   #pass new Performer Data
   performer<-cbind(performer,Pattern)
   
@@ -137,9 +159,7 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
   }
   
   pattern
-  ###Testetstes
-  
-  ####testesttest
+
 }
 
 
@@ -152,11 +172,12 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
 # # 
 # # 
 # g<-c("Symbol","Action")
-# per<-data.Performer.clean[1:5,]
-# View(per)
+per<-subset(data.Performer.clean, Symbol=="EURUSD")
+per<-per[1,]
+ View(per)
 # # #
-# result<-Pattern.KnitWithData(per, data.EURUSD.M15,5,"M15",timestamp=FALSE,netto =  TRUE,Normalized =  TRUE,rm.open =  TRUE)
-# View(result)
+ result<-Pattern.KnitWithData(per, data.History[["EURUSD"]][["M15"]],5,"M15",timestamp=FALSE,netto =  TRUE,Normalized =  TRUE,rm.open =  TRUE)
+ #View(result)
 
 
 # #select(result,Action=="Sell")
