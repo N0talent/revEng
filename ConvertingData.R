@@ -77,6 +77,8 @@ Pattern.FindPattern<-function(performer,Action,history, xBars,TF,timestamp=TRUE,
   if(Normalized==TRUE)bars.transpo<-c(bars.transpo,ATR=ATR)
   data.frame(bars.transpo)
 
+  
+  #testtestest
 }
 
 
@@ -147,11 +149,11 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
 # # 
 # # 
 # g<-c("Symbol","Action")
-per<-data.Performer.clean[1:5,]
-View(per)
-# #
-result<-Pattern.KnitWithData(per, data.EURUSD.M15,5,"M15",timestamp=FALSE,netto =  TRUE,Normalized =  TRUE,rm.open =  TRUE)
-View(result)
+# per<-data.Performer.clean[1:5,]
+# View(per)
+# # #
+# result<-Pattern.KnitWithData(per, data.EURUSD.M15,5,"M15",timestamp=FALSE,netto =  TRUE,Normalized =  TRUE,rm.open =  TRUE)
+# View(result)
 
 
 # #select(result,Action=="Sell")
