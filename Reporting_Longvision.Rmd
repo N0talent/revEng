@@ -272,7 +272,6 @@ data.Pattern.Entries<-cbind(data.Pattern.Entries[,f],Hour,Min, data.Pattern.Entr
 
 write.csv(data.Pattern.Entries,file=FilePath)
 head(data.Pattern.Entries,5)
-
 ```
 
 
