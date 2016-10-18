@@ -7,7 +7,7 @@ Pattern.FindPattern<-function(performer,Action,history, xBars,TF,timestamp=TRUE,
   bars<-bars[1:xBars]
   bars<-bars[,1:4]
   
-  print(factor(Action))
+  #print(factor(Action))
   NullPoint<-0
   ATR<-1
   
@@ -86,44 +86,93 @@ Pattern.KnitWithData<-function(performer, history,xBars,TF,timestamp=TRUE,netto=
 {
   #knit Found Pattern with Performer Data
   require(dplyr)
+  require(xts)
   Pattern=NULL
 
   #Function um Absolutprices zu finden
-  Findpattern.Absolut<-function(open)
+  Findpattern.Absolut<-function(open,action)
   {
-    View(history)
     #FindBars to Timestamp
     f<-index(history)<=open
     bars<-tail(history[f],xBars+1)
     bars<-bars[1:xBars]
     bars<-bars[,1:4]    
     
+    
+    #Normalized
+    ATR<-1
+    StartPrice<-0
+    if(Normalized==TRUE)
+    {
+      ATR<-mean(coredata(bars[,2])-coredata(bars[,3]))
+      bars<-data.frame(coredata(bars))
+      barnames<-names(bars[2:4])
+      StartPrice<-bars[1,1]
+      
+      if(action=="Sell")
+      {
+        #flip Highs with Lows
+        f<-c(3,2,4)
+        bars<-bars[,f]
+        names(bars)<-paste(TF,barnames,sep=".")
+        
+        #Create Netto Prices & Scale 
+        bars<-StartPrice-bars
+        bars<-bars/ATR
+      }
+      else
+      {
+        #flip Highs with Lows
+        f<-c(2:4)
+        bars<-bars[,f]  
+        names(bars)<-paste(TF,barnames,sep=".")
+        
+        #Create Netto Prices & Scale 
+        bars<-bars-StartPrice
+        bars<-bars/ATR
+      }
+    }
+    else
+    {
+      bars<-data.frame(date=index(bars), coredata(bars))
+      barnames<-names(bars)
+      names(bars)<-paste(TF,barnames,sep=".")
+    }
+    
     #Transpo Bars 
     bars.transpo=NULL
-    barnames<-names(bars)
-    names(bars)<-paste(TF,barnames,sep=".")
-    
-    
+
     for (n in 1:nrow(bars))
     {
-      bars.transpo<-cbind(bars.transpo,(bars[n,]))
-
+      bars.transpo<-c(bars.transpo,bars[n,])
     }
-    #print(bars.transpo)
-    data.frame(bars.transpo)
+    
+    #Pass Values
+    if(Normalized==FALSE)
+    {
+      data.frame(bars.transpo)
+    }
+    else
+    {
+      data.frame(bars.transpo,ATR=ATR)
+    }
+    
   }
-  n<-1
-  # for (n in 1:nrow(performer))
-  # {
- print(performer$open[n])
-     Pattern<-rbind(Pattern,Findpattern.Absolut(performer$open[n]))
-  #}
   
-  print(Pattern)
+  n<-1
+  for (n in 1:nrow(performer))
+  {
+    Pattern<-rbind(Pattern,Findpattern.Absolut(performer$open[n],performer$Action[n]))
+  }
+
   #pass new Performer Data
   performer<-cbind(performer,Pattern)
   
 }
+
+
+
+
 
 Pattern.Entries<-function(pattern,Timeframe, xBars)
 {
@@ -173,11 +222,11 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
 # # 
 # g<-c("Symbol","Action")
 per<-subset(data.Performer.clean, Symbol=="EURUSD")
-per<-per[1,]
- View(per)
+per<-per[1:10,]
+# View(per)
 # # #
- result<-Pattern.KnitWithData(per, data.History[["EURUSD"]][["M15"]],5,"M15",timestamp=FALSE,netto =  TRUE,Normalized =  TRUE,rm.open =  TRUE)
- #View(result)
+ result<-Pattern.KnitWithData(per, data.History[["EURUSD"]][["M15"]],5,"M15",Normalized =  FALSE)
+ View(result)
 
 
 # #select(result,Action=="Sell")
