@@ -135,6 +135,7 @@ Pattern.Entries<-function(pattern,Timeframe, xBars)
   }
   
   pattern
+  ###Testetstes
 }
 
 
