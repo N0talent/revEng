@@ -181,73 +181,51 @@ Schreibt File LongVision_AboslutPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4
 #Folgende Instrumente werden benötigt:
 summary(data.Performer.clean$Symbol)
 
-#Bars per TF for Pattern:
-Bars.Lookback<-5
+#File Path:
 SaveFileDirectory<-"./Files/LongVision/"
 SaveFileName<-"LongVision_AbsolutPrices.csv"
 FilePath<-paste(SaveFileDirectory,SaveFileName,sep="")
 
 #Parameter:
+Bars.Lookback<-5
 Symbol<-c("EURUSD","GBPUSD","USDJPY","AUDUSD")
 Timeframe<-c("M5","M15", "H1","H4","D1")
 
-#get Pattern
-data.Performer.pattern.AbsolutPrices<-NULL
-data.Performer.pattern<-NULL
-for (Sym in Symbol)  
+if(!file.exists(FilePath))
 {
-  data.Performer.pattern<- subset(data.Performer.clean,Symbol==Sym)
+#get Pattern
+data.Performer.pattern.AbsolutPrices<- Pattern.CreateData(data.Performer.clean,data.History,Symbol,Timeframe,Norm=FALSE)
 
-  for(t in Timeframe)
-  {
-    data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern,
-                                                 data.History[[Sym]][[t]],
-                                                 Bars.Lookback,t,
-                                                 timestamp=TRUE,
-                                                 netto =  FALSE,
-                                                 Normalized =  FALSE,
-                                                 rm.open =  FALSE)
-  }
-  data.Performer.pattern.AbsolutPrices<-rbind(data.Performer.pattern.AbsolutPrices,data.Performer.pattern)
-}
-  
+#Write File
 write.csv(data.Performer.pattern.AbsolutPrices,file=FilePath)
+}else
+{
+  data.Performer.pattern.AbsolutPrices<- read.csv(FilePath,stringsAsFactors=TRUE)  
+}
+head(data.Performer.pattern.AbsolutPrices,5)
 
-head(data.Performer.pattern,5)
 ```
 
 Schreibt File LongVision_ScaledPrice.csv mit xBar Pattern für TFs (M5,M15,H1,H4,D1):
 
 ```{r scaledPrices}
-#Bars per TF for Pattern:
-Bars.Lookback<-5
-SaveFileDirectory<-"./Files/LongVision/"
+#File Path:
 SaveFileName<-"LongVision_ScaledPrices.csv"
 FilePath<-paste(SaveFileDirectory,SaveFileName,sep="")
 
-#get Pattern
-data.Performer.pattern.ScaledPrice<-NULL
-data.Performer.pattern<-NULL
-for (Sym in Symbol)  
+if(!file.exists(FilePath))
 {
-  data.Performer.pattern<- subset(data.Performer.clean,Symbol==Sym)
-  data.Performer.pattern<- data.Performer.pattern[1:10,]
-  for(t in Timeframe)
-  {
-    data.Performer.pattern<-Pattern.KnitWithData(data.Performer.pattern,
-                                                 data.History[[Sym]][[t]],
-                                                 Bars.Lookback,t,
-                                                 timestamp=FALSE,
-                                                 netto =  TRUE,
-                                                 Normalized =  TRUE,
-                                                 rm.open =  TRUE)
-  }
-  data.Performer.pattern.ScaledPrice<-rbind(data.Performer.pattern.ScaledPrice,data.Performer.pattern)
-}
+  #get Pattern
+  data.Performer.pattern.ScaledPrice<- Pattern.CreateData(data.Performer.clean,data.History,Symbol,Timeframe,Norm=TRUE) 
   
-write.csv(data.Performer.pattern.ScaledPrice,file=FilePath)
+  #Write File
+  write.csv(data.Performer.pattern.ScaledPrice,file=FilePath)
+}else
+{
+  data.Performer.pattern.ScaledPrice<- read.csv(FilePath,stringsAsFactors=TRUE)
+}
+head(data.Performer.pattern.ScaledPrice,5)
 
-head(data.Performer.pattern,5)
 ```
 
 
@@ -256,21 +234,20 @@ head(data.Performer.pattern,5)
 
 
 ```{r EntrieData}
-SaveFileDirectory<-"./Files/LongVision/"
 SaveFileName<-"LongVision_PatternEntries.csv"
 FilePath<-paste(SaveFileDirectory,SaveFileName,sep="")
 
-
-data.Pattern.Entries<-Pattern.Entries(data.Performer.pattern.ScaledPrice,Timeframe, Bars.Lookback)
-
-f<-c("open","Action")
-start<-ncol(data.Performer.clean)+1
-end<-ncol(data.Pattern.Entries)
-Hour<-format(data.Pattern.Entries[,"open"],"%H")
-Min<-format(data.Pattern.Entries[,"open"],"%M")
-data.Pattern.Entries<-cbind(data.Pattern.Entries[,f],Hour,Min, data.Pattern.Entries[,start:end])
-
-write.csv(data.Pattern.Entries,file=FilePath)
+if(!file.exists(FilePath))
+{
+  ColumnsCleanData<-ncol(data.Performer.clean)
+  data.Pattern.Entries<-Pattern.Entries(ColumnsCleanData, data.Performer.pattern.ScaledPrice)
+  
+  #Write File
+  write.csv(data.Pattern.Entries,file=FilePath)
+}else
+{
+  data.Pattern.Entries<- read.csv(FilePath,stringsAsFactors=TRUE)
+}
 head(data.Pattern.Entries,5)
 ```
 

@@ -1,4 +1,4 @@
-Pattern.KnitWithData<-function(performer, history,xBars,TF,timestamp=TRUE,netto=FALSE,Normalized=FALSE,rm.open=FALSE)
+Pattern.KnitWithData<-function(performer, history,xBars,TF,Normalized=FALSE)
 {
   #knit Found Pattern with Performer Data
   require(dplyr)
@@ -13,7 +13,6 @@ Pattern.KnitWithData<-function(performer, history,xBars,TF,timestamp=TRUE,netto=
     bars<-tail(history[f],xBars+1)
     bars<-bars[1:xBars]
     bars<-bars[,1:4]    
-    
     
     #Normalized
     ATR<-1
@@ -88,61 +87,61 @@ Pattern.KnitWithData<-function(performer, history,xBars,TF,timestamp=TRUE,netto=
 
 
 
-
-
-Pattern.Entries<-function(pattern,Timeframe, xBars)
+##---------------------------------------------------------------------------------------------------------------
+Pattern.Entries<-function(col,data)#pattern,Timeframe, xBars)
 {
- 
-  id<-""
-  if(xBars>=2)
-  {
-    for (x in 1:(xBars-1))
-    {
-      id<-c(id,x) 
-    }
-  }
+  #Filter Performer Data
+  date<-as.POSIXct(data[,"open"])
+    
+  Hour<-format(date,"%H")
   
-  col<-NULL
-  for (n in id)
-  {
-    for(m in Timeframe)
-    {
-      #if(n==""){lables<-c("Open" ,  "High"  , "Low" ,   "Close")} else {lables<-c("High" , "Low" , "Close")}
-      lables<-c("High" , "Low" , "Close")
-      d<-paste(m,lables,sep=".")
-      if(n!="")d<-paste(d,n,sep=".")
-      col<-c(col,d)    
-    }
-  }  
+  Min<-format(date,"%M")
+  f<-c("open","Action")
   
+  #Columns for Pattern Data
+  start<-col+2
+  end<-ncol(data)
+  pattern<-cbind(data[,f],Hour,Min, data[,start:end])
   
-  f<-pattern$Action=="Sell" 
-  
-  for (n in col)
-  {
-    pattern[f,n]<- pattern[f,n]*(-1)
-  }
-  
+  #Pass Values
   pattern
 
 }
 
+##---------------------------------------------------------------------------------------------------------------
+Pattern.CreateData<-function(performer,history,Symbol,Timeframe,Norm)
+{
+  pattern.AbsolutPrices<-NULL
+  Performer.pattern<-NULL
+  for (Sym in Symbol)  
+  {
+    Performer.pattern<- subset(performer,Symbol==Sym)
+    for(t in Timeframe)
+    {
+      Performer.pattern<-Pattern.KnitWithData(Performer.pattern,
+                                              history[[Sym]][[t]],
+                                              xBars= Bars.Lookback,
+                                              TF= t,
+                                              Normalized =  Norm)
+    }
+    pattern.AbsolutPrices<-rbind(pattern.AbsolutPrices, Performer.pattern)
+  }
+  pattern.AbsolutPrices
+}
 
-
-
-
+##---------------------------------------------------------------------------------------------------------------
 
 
 # # d<-Pattern.FindPattern(per$open,data.EURUSD.M15,5,"M15",2)
 # # 
 # # 
 # g<-c("Symbol","Action")
-per<-subset(data.Performer.clean, Symbol=="EURUSD")
-per<-per[1:10,]
-# View(per)
-# # #
- result<-Pattern.KnitWithData(per, data.History[["EURUSD"]][["M15"]],5,"M15",Normalized =  FALSE)
- View(result)
+# per<-subset(data.Performer.clean, Symbol=="EURUSD")
+# per<-per[1:10,]
+# # View(per)
+# # # #
+#  result<-Pattern.KnitWithData(per, data.History[["EURUSD"]][["M15"]],xBars=5,TF="M15",Normalized =  TRUE)
+#  View(result)
 
 
 # #select(result,Action=="Sell")
@@ -154,6 +153,17 @@ per<-per[1:10,]
 # 
 #View(result)
 
+# d<-as.POSIXct(data.Performer.pattern.ScaledPrice[1:10,"open"])
+# #d<-factor(d)
+# d<-as.Date.POSIXct(d)
+# format(d,"%H")
+# print(d)
+
+#View(data.Performer.pattern.ScaledPrice[1:10,"open"])
+
+# ColumnsCleanData<-ncol(data.Performer.clean)
+# d<-Pattern.Entries(ColumnsCleanData,data.Performer.pattern.ScaledPrice[1:10,])
+# View(d)
 
 # #transform(result,result[,v]=-1)#result[result$Action=="Sell",v]*-1
 # 
