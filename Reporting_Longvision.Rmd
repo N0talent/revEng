@@ -251,6 +251,25 @@ if(!file.exists(FilePath))
 head(data.Pattern.Entries,5)
 ```
 
+#5. CLustering
+
+Falls Es mehrere Strategien sind muss erstma das Data Geclustered werden:
+
+```{r Clustering}
+
+#clusterdata<-
+
+
+
+
+```
+
+
+
+
+
+
+
 
 
 

@@ -96,7 +96,7 @@ Pattern.Entries<-function(col,data)#pattern,Timeframe, xBars)
   Hour<-format(date,"%H")
   
   Min<-format(date,"%M")
-  f<-c("open","Action")
+  f<-c("open","Symbol")
   
   #Columns for Pattern Data
   start<-col+2
